@@ -11,19 +11,9 @@ const getUsers = (req: Request, res: Response, next: NextFunction) => {
 
 const getUser = (req: Request, res: Response, next: NextFunction) => {
   return User.findOne({ _id: req.params.userId })
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователя не существует');
-      }
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Неверный ID'));
-      } else {
-        next(err);
-      }
-    });
+    .orFail(() => new NotFoundError({ message: 'Пользователя не существует' }))
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 const createUser = (req: Request, res: Response, next: NextFunction) => {
@@ -33,11 +23,13 @@ const createUser = (req: Request, res: Response, next: NextFunction) => {
     about,
     avatar,
   })
-    .then((user) => {
-      res.status(201).send(user);
-    })
-    .catch(() => {
-      throw new BadRequestError('Некорректные данные');
+    .then((user) => res.status(201).send(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError({ message: 'Некорректные данные' }));
+      } else {
+        next(err);
+      }
     })
     .catch(next);
 };
@@ -54,14 +46,14 @@ const updateUser = (req: Request, res: Response, next: NextFunction) => {
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователя не существует');
+    .orFail(() => new NotFoundError({ message: 'Пользователя не существует' }))
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError({ message: 'Некорректные данные' }));
+      } else {
+        next(err);
       }
-      res.status(200).send(user);
-    })
-    .catch(() => {
-      throw new BadRequestError('Некорректные данные');
     })
     .catch(next);
 };
@@ -78,14 +70,14 @@ const updateUserAvatar = (req: Request, res: Response, next: NextFunction) => {
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователя не существует');
+    .orFail(() => new NotFoundError({ message: 'Пользователя не существует' }))
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError({ message: 'Некорректные данные' }));
+      } else {
+        next(err);
       }
-      res.status(200).send(user);
-    })
-    .catch(() => {
-      throw new BadRequestError('Некорректные данные');
     })
     .catch(next);
 };

@@ -20,30 +20,29 @@ const createCard = (req: Request, res: Response, next: NextFunction) => {
     link,
     owner,
   })
-    .then((card) => {
-      res.status(201).send(card);
-    })
-    .catch(() => {
-      throw new BadRequestError('Некорректные данные');
+    .then((card) => res.status(201).send(card))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError({ message: 'Некорректные данные' }));
+      } else {
+        next(err);
+      }
     })
     .catch(next);
 };
 
 const deleteCard = (req: Request, res: Response, next: NextFunction) => {
   return Card.findById(req.params.cardId)
+    .orFail(new NotFoundError({ message: 'Карточки не существует' }))
     .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточки не существует');
-      }
       // @ts-ignore
       if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('Ошибка прав доступа');
+        next(new ForbiddenError({ message: 'Ошибка прав доступа' }));
+      } else {
+        Card.findByIdAndDelete(req.params.cardId)
+          .then((cardInfo) => res.send(cardInfo))
+          .catch(next);
       }
-      Card.findByIdAndDelete(req.params.cardId)
-        .then((cardInfo) => {
-          res.send(cardInfo);
-        })
-        .catch(next);
     })
     .catch(next);
 };
@@ -57,15 +56,13 @@ const likeCard = (req: Request, res: Response, next: NextFunction) => {
     { $addToSet: { likes: owner } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточки не существует');
-      }
-      res.send({ data: card });
-    })
+    .orFail(new NotFoundError({ message: 'Карточки не существует' }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Некорректные данные');
+        next(new BadRequestError({ message: 'Некорректные данные' }));
+      } else {
+        next(err);
       }
     })
     .catch(next);
@@ -80,15 +77,13 @@ const dislikeCard = (req: Request, res: Response, next: NextFunction) => {
     { $pull: { likes: owner } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточки не существует');
-      }
-      res.send({ data: card });
-    })
+    .orFail(new NotFoundError({ message: 'Карточки не существует' }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Некорректные данные');
+        next(new BadRequestError({ message: 'Некорректные данные' }));
+      } else {
+        next(err);
       }
     })
     .catch(next);
