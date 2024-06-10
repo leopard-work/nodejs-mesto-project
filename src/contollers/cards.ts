@@ -54,7 +54,7 @@ const likeCard = (req: Request, res: Response, next: NextFunction) => {
     { new: true },
   )
     .orFail(new NotFoundError({ message: 'Карточки не существует' }))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError({ message: 'Некорректные данные' }));
@@ -74,7 +74,7 @@ const dislikeCard = (req: Request, res: Response, next: NextFunction) => {
     { new: true },
   )
     .orFail(new NotFoundError({ message: 'Карточки не существует' }))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError({ message: 'Некорректные данные' }));

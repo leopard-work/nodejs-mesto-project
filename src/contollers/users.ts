@@ -119,6 +119,17 @@ const loginUser = (req: Request, res: Response, next: NextFunction) => {
     .catch(next);
 };
 
+const getThisUser = (req: Request, res: Response, next: NextFunction) => {
+  return User.findById(req.user._id)
+    .orFail(() => new NotFoundError({ message: 'Пользователя не существует' }))
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError({ message: 'Некорректные данные' }));
+      } else next(err);
+    });
+};
+
 export {
   getUsers,
   getUser,
@@ -126,4 +137,5 @@ export {
   updateUser,
   updateUserAvatar,
   loginUser,
+  getThisUser,
 };
