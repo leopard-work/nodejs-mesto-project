@@ -44,6 +44,7 @@
     "object-curly-newline": "off",
     "consistent-return": "off",
     "no-else-return": "off",
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "operator-linebreak": "off"
   },
 }

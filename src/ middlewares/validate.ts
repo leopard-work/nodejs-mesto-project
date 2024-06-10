@@ -1,5 +1,8 @@
 import { celebrate, Joi } from 'celebrate';
 
+const linkExp =
+  /^((http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/;
+
 const userUpdateValidate = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -9,7 +12,7 @@ const userUpdateValidate = celebrate({
 
 const userUpdateAvatarValidate = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri().required(),
+    avatar: Joi.string().regex(linkExp).required(),
   }),
 });
 
@@ -35,7 +38,7 @@ const cardIdValidate = celebrate({
 const cardValidate = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().uri().required(),
+    link: Joi.string().regex(linkExp).required(),
   }),
 });
 
