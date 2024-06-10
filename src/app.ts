@@ -5,6 +5,7 @@ import path from 'path';
 import helmet from 'helmet';
 import router from './routes';
 import { errorHandler } from './errors/error-handler';
+import types from './types';
 
 const { PORT = 3000 } = process.env;
 
