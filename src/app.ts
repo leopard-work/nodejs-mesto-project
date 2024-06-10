@@ -9,6 +9,7 @@ import types from './types';
 import auth from './ middlewares/auth';
 import { createUser, loginUser } from './contollers/users';
 import { requestLogger, errorLogger } from './ middlewares/logger';
+import { userLoginValidate } from './ middlewares/validate';
 
 const cookieParser = require('cookie-parser');
 
@@ -26,8 +27,8 @@ const startServer = () => {
   app.use(express.static('public'));
 
   app.use(cookieParser());
-  app.post('/signup', createUser);
-  app.post('/signin', loginUser);
+  app.post('/signup', userLoginValidate, createUser);
+  app.post('/signin', userLoginValidate, loginUser);
   app.use(auth);
   app.use(router);
   app.use(helmet());

@@ -6,13 +6,18 @@ import {
   updateUser,
   updateUserAvatar,
 } from '../contollers/users';
+import {
+  userIdValidate,
+  userUpdateAvatarValidate,
+  userUpdateValidate,
+} from '../ middlewares/validate';
 
 const usersRouter = Router();
 
 usersRouter.get('/', getUsers);
 usersRouter.get('/me', getThisUser);
-usersRouter.get('/:userId', getUser);
-usersRouter.patch('/me', updateUser);
-usersRouter.patch('/me/avatar', updateUserAvatar);
+usersRouter.get('/:userId', userIdValidate, getUser);
+usersRouter.patch('/me', userUpdateValidate, updateUser);
+usersRouter.patch('/me/avatar', userUpdateAvatarValidate, updateUserAvatar);
 
 export default usersRouter;
