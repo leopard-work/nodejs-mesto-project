@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/user';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User, { IUser } from '../models/user';
 import NotFoundError from '../errors/not-found';
 import BadRequestError from '../errors/bad-request';
+import ConflictError from '../errors/conflict';
 
 const getUsers = (req: Request, res: Response, next: NextFunction) => {
   return User.find({})
@@ -17,19 +20,36 @@ const getUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const createUser = (req: Request, res: Response, next: NextFunction) => {
-  const { name, about, avatar } = req.body;
-  return User.create({
-    name,
-    about,
-    avatar,
-  })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError({ message: 'Некорректные данные' }));
-      } else {
-        next(err);
-      }
+  const { name, about, avatar, email, password } = req.body;
+
+  bcrypt
+    .hash(password, 10)
+    .then((hash: string) => {
+      User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+        .then((user: IUser) => {
+          res.status(201).send({
+            name: user.name,
+            email: user.email,
+            about: user.about,
+            avatar: user.avatar,
+          });
+        })
+        .catch((err) => {
+          if (err.code === 11000) {
+            next(new ConflictError({ message: 'Пользователь уже существует' }));
+          } else if (err.name === 'ValidationError') {
+            next(new BadRequestError({ message: 'Некорректные данные' }));
+          } else {
+            next(err);
+          }
+        })
+        .catch(next);
     })
     .catch(next);
 };
@@ -80,4 +100,30 @@ const updateUserAvatar = (req: Request, res: Response, next: NextFunction) => {
     .catch(next);
 };
 
-export { getUsers, getUser, createUser, updateUser, updateUserAvatar };
+const loginUser = (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'key', {
+        expiresIn: '7d',
+      });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .send({ message: 'ok' });
+    })
+    .catch(next);
+};
+
+export {
+  getUsers,
+  getUser,
+  createUser,
+  updateUser,
+  updateUserAvatar,
+  loginUser,
+};

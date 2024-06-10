@@ -41,6 +41,9 @@
     "import/prefer-default-export": "off",
     "arrow-body-style": "off",
     "no-underscore-dangle": ["error", { allow: ["_id"] }],
-    "object-curly-newline": "off"
+    "object-curly-newline": "off",
+    "consistent-return": "off",
+    "no-else-return": "off",
+    "no-unused-vars": "off"
   },
 }
