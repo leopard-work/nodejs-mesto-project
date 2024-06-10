@@ -15,7 +15,6 @@ const startServer = () => {
   app.use(express.json());
 
   app.use((req: Request, res: Response, next: NextFunction) => {
-    // @ts-ignore
     req.user = {
       _id: '666346ddb4458479a5bd9dca', // вставьте сюда _id созданного в предыдущем пункте пользователя
     };

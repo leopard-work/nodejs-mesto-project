@@ -12,7 +12,6 @@ const getCards = (req: Request, res: Response, next: NextFunction) => {
 
 const createCard = (req: Request, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
-  // @ts-ignore
   const owner = req.user._id;
 
   return Card.create({
@@ -35,7 +34,6 @@ const deleteCard = (req: Request, res: Response, next: NextFunction) => {
   return Card.findById(req.params.cardId)
     .orFail(new NotFoundError({ message: 'Карточки не существует' }))
     .then((card) => {
-      // @ts-ignore
       if (card.owner.toString() !== req.user._id) {
         next(new ForbiddenError({ message: 'Ошибка прав доступа' }));
       } else {
@@ -48,7 +46,6 @@ const deleteCard = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const likeCard = (req: Request, res: Response, next: NextFunction) => {
-  // @ts-ignore
   const owner = req.user._id;
 
   return Card.findByIdAndUpdate(
@@ -69,7 +66,6 @@ const likeCard = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const dislikeCard = (req: Request, res: Response, next: NextFunction) => {
-  // @ts-ignore
   const owner = req.user._id;
 
   return Card.findByIdAndUpdate(

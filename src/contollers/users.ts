@@ -38,7 +38,6 @@ const updateUser = (req: Request, res: Response, next: NextFunction) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
-    // @ts-ignore
     req.user._id,
     { name, about },
     {
@@ -62,7 +61,6 @@ const updateUserAvatar = (req: Request, res: Response, next: NextFunction) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
-    // @ts-ignore
     req.user._id,
     { avatar },
     {
