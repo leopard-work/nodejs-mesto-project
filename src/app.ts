@@ -8,6 +8,8 @@ import { errorHandler } from './errors/error-handler';
 import types from './types';
 import auth from './ middlewares/auth';
 import { createUser, loginUser } from './contollers/users';
+import { requestLogger, errorLogger } from './ middlewares/logger';
+
 const cookieParser = require('cookie-parser');
 
 const { PORT = 3000 } = process.env;
@@ -17,6 +19,7 @@ const startServer = () => {
 
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
+  app.use(requestLogger);
 
   // TODO frontend build
   app.use(express.static(path.join(__dirname, 'public', 'build')));
@@ -28,6 +31,7 @@ const startServer = () => {
   app.use(auth);
   app.use(router);
   app.use(helmet());
+  app.use(errorLogger);
   app.use(errors());
   app.use(errorHandler);
 
