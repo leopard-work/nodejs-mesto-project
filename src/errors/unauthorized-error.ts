@@ -1,9 +1,11 @@
+import { StatusCodes } from './http-status-codes';
+
 class UnauthorizedError extends Error {
   private statusCode: number;
 
   constructor(message) {
     super(message);
-    this.statusCode = 401;
+    this.statusCode = StatusCodes.UNAUTHORIZED;
     this.message = message;
   }
 }

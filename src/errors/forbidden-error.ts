@@ -1,9 +1,11 @@
+import { StatusCodes } from './http-status-codes';
+
 class ForbiddenError extends Error {
   private statusCode: number;
 
   constructor(message) {
     super(message);
-    this.statusCode = 403;
+    this.statusCode = StatusCodes.FORBIDDEN;
     this.message = message;
   }
 }

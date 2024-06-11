@@ -5,6 +5,7 @@ import User, { IUser } from '../models/user';
 import NotFoundError from '../errors/not-found';
 import BadRequestError from '../errors/bad-request';
 import ConflictError from '../errors/conflict';
+import { StatusCodes } from '../errors/http-status-codes';
 
 const getUsers = (req: Request, res: Response, next: NextFunction) => {
   return User.find({})
@@ -66,7 +67,7 @@ const updateUser = (req: Request, res: Response, next: NextFunction) => {
     },
   )
     .orFail(() => new NotFoundError({ message: 'Пользователя не существует' }))
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(StatusCodes.OK).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError({ message: 'Некорректные данные' }));
@@ -89,7 +90,7 @@ const updateUserAvatar = (req: Request, res: Response, next: NextFunction) => {
     },
   )
     .orFail(() => new NotFoundError({ message: 'Пользователя не существует' }))
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(StatusCodes.OK).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError({ message: 'Некорректные данные' }));
@@ -122,7 +123,7 @@ const loginUser = (req: Request, res: Response, next: NextFunction) => {
 const getThisUser = (req: Request, res: Response, next: NextFunction) => {
   return User.findById(req.user._id)
     .orFail(() => new NotFoundError({ message: 'Пользователя не существует' }))
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(StatusCodes.OK).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError({ message: 'Некорректные данные' }));

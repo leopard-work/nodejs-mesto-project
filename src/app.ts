@@ -27,11 +27,11 @@ const startServer = () => {
   app.use(express.static('public'));
 
   app.use(cookieParser());
+  app.use(helmet());
   app.post('/signup', userLoginValidate, createUser);
   app.post('/signin', userLoginValidate, loginUser);
   app.use(auth);
   app.use(router);
-  app.use(helmet());
   app.use(errorLogger);
   app.use(errors());
   app.use(errorHandler);

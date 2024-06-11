@@ -3,6 +3,7 @@ import Card from '../models/card';
 import BadRequestError from '../errors/bad-request';
 import NotFoundError from '../errors/not-found';
 import ForbiddenError from '../errors/forbidden-error';
+import { StatusCodes } from '../errors/http-status-codes';
 
 const getCards = (req: Request, res: Response, next: NextFunction) => {
   return Card.find({})
@@ -19,7 +20,7 @@ const createCard = (req: Request, res: Response, next: NextFunction) => {
     link,
     owner,
   })
-    .then((card) => res.status(201).send(card))
+    .then((card) => res.status(StatusCodes.CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError({ message: 'Некорректные данные' }));
